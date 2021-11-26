@@ -10,6 +10,10 @@ import (
 
 // setCache 设置缓存
 func (m *GfToken) setCache(cacheKey string, userCache g.Map) Resp {
+	//优先取userCache设置的过期时间
+	if timeout := gjson.New(userCache).GetInt("data.timeout"); timeout != 0 {
+		m.Timeout = timeout
+	}
 	switch m.CacheMode {
 	case CacheModeCache:
 		gcache.Set(cacheKey, userCache, gconv.Duration(m.Timeout)*time.Millisecond)
